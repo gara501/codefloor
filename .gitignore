@@ -1,0 +1,8 @@
+node_modules/
+dist/
+dist-app/
+packages/cli/app/
+coverage/
+*.tsbuildinfo
+.superpowers/
+codefloor-site/

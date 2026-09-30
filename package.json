@@ -1,0 +1,26 @@
+{
+  "name": "codefloor-monorepo",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/schema",
+    "packages/viewer",
+    "packages/cli"
+  ],
+  "scripts": {
+    "build": "npm run build -w @codefloor/schema && npm run build -w @codefloor/viewer && npm run build -w codefloor",
+    "test": "vitest run && npm run check:internal",
+    "lint": "biome check .",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "check:internal": "node scripts/check-no-internal.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.15",
+    "@types/node": "^22.20.4",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
+  }
+}
