@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "codefloor/v1",
+  "title": "Codefloor architecture document",
+  "type": "object",
+  "required": ["name", "lastReviewed", "layers", "nodes", "edges", "flows"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "name": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "lastReviewed": { "type": "string", "minLength": 1 },
+    "layers": { "type": "array", "items": { "$ref": "#/$defs/layer" } },
+    "nodes": { "type": "array", "items": { "$ref": "#/$defs/node" } },
+    "edges": { "type": "array", "items": { "$ref": "#/$defs/edge" } },
+    "flows": { "type": "array", "items": { "$ref": "#/$defs/flow" } },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "sources": { "type": "object", "additionalProperties": { "type": "string" } }
+      }
+    }
+  },
+  "$defs": {
+    "status": { "enum": ["built", "planned"] },
+    "layer": {
+      "type": "object",
+      "required": ["id", "label"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" }
+      }
+    },
+    "node": {
+      "type": "object",
+      "required": ["id", "label", "layer", "status", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string", "minLength": 1 },
+        "layer": { "type": "string", "minLength": 1 },
+        "status": { "$ref": "#/$defs/status" },
+        "files": { "type": "array", "items": { "type": "string" } },
+        "description": { "type": "string", "minLength": 1 }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "required": ["id", "from", "to", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "from": { "type": "string", "minLength": 1 },
+        "to": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "kind": { "enum": ["imports", "calls", "http", "event", "reads", "writes"] },
+        "status": { "$ref": "#/$defs/status" }
+      }
+    },
+    "flow": {
+      "type": "object",
+      "required": ["id", "name", "description", "steps"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["node", "label", "detail"],
+            "additionalProperties": false,
+            "properties": {
+              "node": { "type": "string", "minLength": 1 },
+              "label": { "type": "string", "minLength": 1 },
+              "detail": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    }
+  }
+}
