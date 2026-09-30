@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 import { runExtract } from "./commands/extract.js";
 import { runInit } from "./commands/init.js";
+import { runValidate } from "./commands/validate.js";
 import { CliError } from "./errors.js";
 
 const HELP = `codefloor — interactive architecture maps from a JSON document
@@ -10,6 +11,9 @@ const HELP = `codefloor — interactive architecture maps from a JSON document
 Usage:
   codefloor init [--force]                      Write codefloor.config.json
   codefloor extract [--config f] [--out f]      Extract a skeleton document from TS/JS imports
+  codefloor extract --against codefloor.json    Print what changed since that document (JSON diff)
+  codefloor validate <file> [--root dir] [--stale]
+                                                Validate; --root checks files, --stale compares hashes
   codefloor --help | --version
 `;
 
@@ -25,6 +29,9 @@ async function main(argv: string[]): Promise<number> {
     options: {
       config: { type: "string" },
       out: { type: "string" },
+      against: { type: "string" },
+      root: { type: "string" },
+      stale: { type: "boolean" },
       force: { type: "boolean" },
       help: { type: "boolean", short: "h" },
       version: { type: "boolean", short: "v" },
@@ -45,9 +52,21 @@ async function main(argv: string[]): Promise<number> {
     case "init":
       return runInit(cwd, values.force ?? false);
     case "extract": {
-      const json = runExtract({ cwd, config: values.config, out: values.out });
-      if (!values.out) process.stdout.write(json);
+      const json = runExtract({
+        cwd,
+        config: values.config,
+        out: values.out,
+        against: values.against,
+      });
+      if (!values.out || values.against) process.stdout.write(json);
       return 0;
+    }
+    case "validate": {
+      const file = positionals[1];
+      if (!file) throw new CliError("Usage: codefloor validate <file> [--root dir] [--stale]");
+      const { exitCode, report } = runValidate(file, { root: values.root, stale: values.stale });
+      console.log(report);
+      return exitCode;
     }
     default:
       throw new CliError(`Unknown command "${command}".\n\n${HELP}`);
