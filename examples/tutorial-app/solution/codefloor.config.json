@@ -1,0 +1,43 @@
+{
+  "root": "src",
+  "tsconfig": "tsconfig.json",
+  "layers": [
+    { "id": "ui", "label": "UI" },
+    { "id": "features", "label": "Features" },
+    { "id": "platform", "label": "Platform" }
+  ],
+  "modules": [
+    {
+      "id": "entry",
+      "label": "App entry",
+      "layer": "ui",
+      "include": ["src/main.ts", "src/app/**"]
+    },
+    {
+      "id": "notes-page",
+      "label": "Notes page",
+      "layer": "ui",
+      "include": ["src/pages/NotesPage.ts"]
+    },
+    {
+      "id": "editor-page",
+      "label": "Editor page",
+      "layer": "ui",
+      "include": ["src/pages/EditorPage.ts"]
+    },
+    { "id": "notes", "label": "Notes", "layer": "features", "include": ["src/features/notes/**"] },
+    {
+      "id": "search",
+      "label": "Search",
+      "layer": "features",
+      "include": ["src/features/search/**"]
+    },
+    { "id": "http", "label": "HTTP client", "layer": "platform", "include": ["src/lib/http.ts"] },
+    {
+      "id": "storage",
+      "label": "Local storage",
+      "layer": "platform",
+      "include": ["src/lib/storage.ts"]
+    }
+  ]
+}

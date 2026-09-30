@@ -1,0 +1,269 @@
+{
+  "$schema": "https://unpkg.com/@codefloor/schema/schema.json",
+  "name": "Notes app",
+  "lastReviewed": "2026-09-30",
+  "layers": [
+    {
+      "id": "ui",
+      "label": "UI"
+    },
+    {
+      "id": "features",
+      "label": "Features"
+    },
+    {
+      "id": "platform",
+      "label": "Platform"
+    },
+    {
+      "id": "external",
+      "label": "External"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "entry",
+      "label": "App entry",
+      "layer": "ui",
+      "status": "built",
+      "files": ["src/main.ts", "src/app/**"],
+      "description": "Boots the app and routes between the notes list and the editor based on the ?note= query param."
+    },
+    {
+      "id": "notes-page",
+      "label": "Notes page",
+      "layer": "ui",
+      "status": "built",
+      "files": ["src/pages/NotesPage.ts"],
+      "description": "Lists all notes, or the search results when a query is given."
+    },
+    {
+      "id": "editor-page",
+      "label": "Editor page",
+      "layer": "ui",
+      "status": "built",
+      "files": ["src/pages/EditorPage.ts"],
+      "description": "Edits one note in a textarea and saves it on change. The first line becomes the title."
+    },
+    {
+      "id": "notes",
+      "label": "Notes",
+      "layer": "features",
+      "status": "built",
+      "files": ["src/features/notes/**"],
+      "description": "Owns the in-memory notes and their lifecycle. Saving writes to local storage, updates the search index, then pushes to the Notes API."
+    },
+    {
+      "id": "search",
+      "label": "Search",
+      "layer": "features",
+      "status": "built",
+      "files": ["src/features/search/**"],
+      "description": "Keeps an in-memory index of notes and answers case-insensitive text queries."
+    },
+    {
+      "id": "http",
+      "label": "HTTP client",
+      "layer": "platform",
+      "status": "built",
+      "files": ["src/lib/http.ts"],
+      "description": "Minimal fetch wrapper that sends JSON and throws on non-2xx responses."
+    },
+    {
+      "id": "storage",
+      "label": "Local storage",
+      "layer": "platform",
+      "status": "built",
+      "files": ["src/lib/storage.ts"],
+      "description": "Reads and writes JSON values in the browser's localStorage."
+    },
+    {
+      "id": "notes-api",
+      "label": "Notes API",
+      "layer": "external",
+      "status": "built",
+      "description": "Backend that stores notes. Receives PUT /api/notes/:id with the full note as JSON."
+    },
+    {
+      "id": "browser-storage",
+      "label": "Browser localStorage",
+      "layer": "external",
+      "status": "built",
+      "description": "Per-browser key-value store; notes survive reloads but not a new device."
+    },
+    {
+      "id": "sync-worker",
+      "label": "Sync worker",
+      "layer": "platform",
+      "status": "planned",
+      "description": "Planned: retry failed saves in the background when the device is back online."
+    }
+  ],
+  "edges": [
+    {
+      "id": "editor-page->notes",
+      "from": "editor-page",
+      "to": "notes",
+      "kind": "imports",
+      "status": "built"
+    },
+    {
+      "id": "entry->editor-page",
+      "from": "entry",
+      "to": "editor-page",
+      "kind": "imports",
+      "status": "built"
+    },
+    {
+      "id": "entry->notes-page",
+      "from": "entry",
+      "to": "notes-page",
+      "kind": "imports",
+      "status": "built"
+    },
+    {
+      "id": "notes->http",
+      "from": "notes",
+      "to": "http",
+      "kind": "imports",
+      "status": "built"
+    },
+    {
+      "id": "notes->search",
+      "from": "notes",
+      "to": "search",
+      "kind": "imports",
+      "status": "built"
+    },
+    {
+      "id": "notes->storage",
+      "from": "notes",
+      "to": "storage",
+      "kind": "imports",
+      "status": "built"
+    },
+    {
+      "id": "notes-page->notes",
+      "from": "notes-page",
+      "to": "notes",
+      "kind": "imports",
+      "status": "built"
+    },
+    {
+      "id": "notes-page->search",
+      "from": "notes-page",
+      "to": "search",
+      "kind": "imports",
+      "status": "built"
+    },
+    {
+      "id": "search->notes",
+      "from": "search",
+      "to": "notes",
+      "kind": "imports",
+      "status": "built"
+    },
+    {
+      "id": "http->notes-api",
+      "from": "http",
+      "to": "notes-api",
+      "kind": "http",
+      "label": "PUT /api/notes/:id",
+      "status": "built"
+    },
+    {
+      "id": "storage->browser-storage",
+      "from": "storage",
+      "to": "browser-storage",
+      "kind": "writes",
+      "label": "notes",
+      "status": "built"
+    },
+    {
+      "id": "notes->sync-worker",
+      "from": "notes",
+      "to": "sync-worker",
+      "kind": "calls",
+      "label": "queue failed save",
+      "status": "planned"
+    }
+  ],
+  "flows": [
+    {
+      "id": "save-note",
+      "name": "Save a note",
+      "description": "From typing in the editor to the note stored locally and on the server.",
+      "steps": [
+        {
+          "node": "editor-page",
+          "label": "Edit text",
+          "detail": "The textarea fires change; the first line becomes the title."
+        },
+        {
+          "node": "notes",
+          "label": "Update the note",
+          "detail": "saveNote puts the note in the in-memory map."
+        },
+        {
+          "node": "storage",
+          "label": "Persist locally",
+          "detail": "All notes are written to localStorage as one JSON object."
+        },
+        {
+          "node": "search",
+          "label": "Re-index",
+          "detail": "The note is added to the search index so it shows up in results."
+        },
+        {
+          "node": "http",
+          "label": "Push to server",
+          "detail": "A PUT request sends the note as JSON."
+        },
+        {
+          "node": "notes-api",
+          "label": "Store remotely",
+          "detail": "The backend saves the note; a non-2xx status becomes an error."
+        }
+      ]
+    },
+    {
+      "id": "search-notes",
+      "name": "Search notes",
+      "description": "How a query turns into the filtered list on the notes page.",
+      "steps": [
+        {
+          "node": "entry",
+          "label": "Route to list",
+          "detail": "No ?note= param, so the router renders the notes page."
+        },
+        {
+          "node": "notes-page",
+          "label": "Read the query",
+          "detail": "With a query, the page asks search instead of listing everything."
+        },
+        {
+          "node": "search",
+          "label": "Match notes",
+          "detail": "Title and body are matched case-insensitively against the query."
+        },
+        {
+          "node": "notes-page",
+          "label": "Render results",
+          "detail": "Each match becomes a list item with its title."
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "sources": {
+      "editor-page": "sha256:188fb7f836ec87d7386ec4339f8bc67bcd283da7f99781ec8faa53ec954829e5",
+      "entry": "sha256:2f27bdcf33fd5f14ff6b0b7b716a584f73b32d73d438b421b8b69f95db86c2cf",
+      "http": "sha256:d5a9415b6f12a1213e161292c6aec9d2fe0090b5c088cefdb43cc80e55d59961",
+      "notes": "sha256:9e50321ea869f826893edbb7f089550af965342a0a06073548b4f02e1c702269",
+      "notes-page": "sha256:f84f654f452b3297bda9f9b6976c9f06a20d75d32307c24bde8b8f9a21dc3a77",
+      "search": "sha256:29eca05583c887b2c62670fe6894ce8a7453eca3347e3dddb28ad00e80bc133c",
+      "storage": "sha256:9f4510ed30aa8b773a5254f8c53721d4e921956adf17fa7e6534f34db91bb5aa"
+    }
+  },
+  "description": "A tiny notes app: list and search notes, edit one, save locally and sync to a backend."
+}

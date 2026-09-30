@@ -39,6 +39,8 @@ Screenshots show the bundled [booking-platform demo](examples/booking-platform/c
 
 ## Map your own project
 
+New here? Follow the [step-by-step tutorial](docs/tutorial.md): it maps a small sample app from scratch in about 20 minutes.
+
 ```bash
 npx codefloor init                          # writes codefloor.config.json
 npx codefloor extract --out codefloor.json  # modules + import edges from your code
