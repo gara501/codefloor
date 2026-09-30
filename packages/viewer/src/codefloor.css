@@ -1,0 +1,621 @@
+@import "@xyflow/react/dist/style.css";
+
+.cf-root {
+  --cf-bg: #ffffff;
+  --cf-card: #ffffff;
+  --cf-fg: #18181b;
+  --cf-muted: #71717a;
+  --cf-subtle: #f4f4f5;
+  --cf-border: #e4e4e7;
+  --cf-border-strong: #a1a1aa;
+  --cf-primary: #4f46e5;
+  --cf-primary-soft: rgb(79 70 229 / 0.1);
+  --cf-primary-fg: #ffffff;
+  --cf-built: #059669;
+  --cf-edge: #a1a1aa;
+  --cf-danger: #dc2626;
+  --cf-radius: 8px;
+  --cf-font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --cf-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  height: 100%;
+  min-height: 100vh;
+  background: var(--cf-bg);
+  color: var(--cf-fg);
+  font-family: var(--cf-font);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.cf-root[data-cf-theme="dark"] {
+  --cf-bg: #0b0b0f;
+  --cf-card: #16161c;
+  --cf-fg: #f4f4f5;
+  --cf-muted: #a1a1aa;
+  --cf-subtle: #1f1f27;
+  --cf-border: #2a2a33;
+  --cf-border-strong: #52525b;
+  --cf-primary: #818cf8;
+  --cf-primary-soft: rgb(129 140 248 / 0.15);
+  --cf-primary-fg: #0b0b0f;
+  --cf-built: #34d399;
+  --cf-edge: #71717a;
+}
+
+@media (prefers-color-scheme: dark) {
+  .cf-root[data-cf-theme="system"] {
+    --cf-bg: #0b0b0f;
+    --cf-card: #16161c;
+    --cf-fg: #f4f4f5;
+    --cf-muted: #a1a1aa;
+    --cf-subtle: #1f1f27;
+    --cf-border: #2a2a33;
+    --cf-border-strong: #52525b;
+    --cf-primary: #818cf8;
+    --cf-primary-soft: rgb(129 140 248 / 0.15);
+    --cf-primary-fg: #0b0b0f;
+    --cf-built: #34d399;
+    --cf-edge: #71717a;
+  }
+}
+
+.cf-root *,
+.cf-root *::before,
+.cf-root *::after {
+  box-sizing: border-box;
+}
+/* Resets use :where() so component classes win without. */
+:where(.cf-root) button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.cf-root button:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+.cf-root :focus-visible {
+  outline: 2px solid var(--cf-primary);
+  outline-offset: 2px;
+}
+:where(.cf-root) :where(p, h1, h2, ul, dl, dd) {
+  margin: 0;
+  padding: 0;
+}
+
+/* Layout */
+.cf-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+.cf-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--cf-border);
+}
+.cf-body {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+.cf-fill {
+  height: 100%;
+}
+.cf-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+.cf-measure {
+  max-width: 36rem;
+  margin-top: 2px;
+}
+
+/* Utilities */
+.cf-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cf-row--between {
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.cf-wrap {
+  flex-wrap: wrap;
+}
+.cf-min0 {
+  min-width: 0;
+}
+.cf-relative {
+  position: relative;
+}
+.cf-block {
+  display: block;
+}
+.cf-strong {
+  font-weight: 500;
+}
+.cf-muted {
+  color: var(--cf-muted);
+}
+.cf-primary {
+  color: var(--cf-primary);
+}
+.cf-small {
+  font-size: 12px;
+}
+.cf-mono {
+  font-family: var(--cf-mono);
+  font-size: 11px;
+  word-break: break-all;
+}
+.cf-mt {
+  margin-top: 6px;
+}
+.cf-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cf-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cf-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .cf-hide-sm {
+    display: none;
+  }
+}
+
+/* Controls */
+.cf-btn {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid var(--cf-border);
+  border-radius: var(--cf-radius);
+  font-size: 12px;
+  font-weight: 500;
+  list-style: none;
+  cursor: pointer;
+}
+.cf-btn::-webkit-details-marker {
+  display: none;
+}
+.cf-btn:hover,
+.cf-option:hover,
+.cf-row-btn:hover {
+  background: var(--cf-subtle);
+}
+.cf-icon-btn {
+  color: var(--cf-muted);
+  font-size: 18px;
+  line-height: 1;
+}
+.cf-icon-btn:hover {
+  color: var(--cf-fg);
+}
+.cf-input {
+  width: 11rem;
+  padding: 6px 12px;
+  border: 1px solid var(--cf-border);
+  border-radius: var(--cf-radius);
+  background: transparent;
+  color: var(--cf-fg);
+  font: inherit;
+  font-size: 12px;
+  transition: width 200ms ease;
+}
+.cf-input:focus {
+  width: 15rem;
+  outline: 2px solid var(--cf-primary-soft);
+}
+.cf-segmented {
+  display: inline-flex;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--cf-border);
+  border-radius: var(--cf-radius);
+  overflow: hidden;
+}
+.cf-segmented button {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--cf-muted);
+}
+.cf-segmented button + button {
+  border-left: 1px solid var(--cf-border);
+}
+.cf-segmented button[aria-pressed="true"] {
+  background: var(--cf-primary-soft);
+  color: var(--cf-fg);
+}
+.cf-popover {
+  position: absolute;
+  right: 0;
+  z-index: 20;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background: var(--cf-card);
+  border: 1px solid var(--cf-border);
+  border-radius: var(--cf-radius);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.15);
+}
+.cf-popover--flows {
+  width: 20rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.cf-popover--search {
+  width: 18rem;
+}
+.cf-option {
+  display: block;
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 6px;
+  text-align: left;
+  font-size: 12px;
+  cursor: pointer;
+}
+.cf-option--active,
+.cf-option[aria-pressed="true"] {
+  background: var(--cf-primary-soft);
+}
+.cf-badge {
+  flex-shrink: 0;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--cf-subtle);
+  color: var(--cf-muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.cf-chip {
+  padding: 2px 8px;
+  border: 1px solid var(--cf-border);
+  border-radius: 999px;
+  font-size: 12px;
+}
+.cf-chip:hover {
+  border-color: var(--cf-primary);
+  background: var(--cf-primary-soft);
+}
+.cf-link {
+  font-weight: 500;
+}
+.cf-link:hover {
+  color: var(--cf-primary);
+  text-decoration: underline;
+}
+.cf-dot {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--cf-built);
+}
+.cf-dot--planned {
+  background: transparent;
+  border: 1px dashed var(--cf-muted);
+}
+
+/* Cards */
+.cf-card {
+  padding: 16px;
+  background: var(--cf-card);
+  border: 1px solid var(--cf-border);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.12);
+}
+.cf-card--inline {
+  padding: 0 8px 16px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.cf-section {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--cf-border);
+  font-size: 12px;
+}
+.cf-connections {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cf-errors {
+  max-width: 40rem;
+  margin: 48px auto;
+  border-color: var(--cf-danger);
+}
+.cf-errors ul {
+  margin-top: 8px;
+  padding-left: 20px;
+}
+
+/* List view */
+.cf-list {
+  height: 100%;
+  overflow-y: auto;
+  padding: 24px;
+}
+.cf-list__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding-bottom: 12rem;
+}
+.cf-eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--cf-muted);
+}
+.cf-rows {
+  margin-top: 8px;
+  list-style: none;
+  border-top: 1px solid var(--cf-border);
+}
+.cf-rows > li {
+  border-bottom: 1px solid var(--cf-border);
+}
+.cf-row-btn {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 8px;
+  text-align: left;
+  transition: background-color 200ms ease;
+}
+.cf-row-btn--current {
+  background: var(--cf-primary-soft);
+}
+.cf-row-btn--current .cf-strong {
+  color: var(--cf-primary);
+}
+
+/* Diagram */
+.cf-diagram {
+  position: relative;
+  height: 100%;
+}
+.cf-overlay {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  max-width: 24rem;
+  max-height: calc(100% - 2rem);
+  overflow-y: auto;
+  z-index: 10;
+}
+.cf-node {
+  width: 168px;
+  padding: 8px 10px;
+  border: 1px solid var(--cf-border);
+  border-radius: 6px;
+  background: var(--cf-card);
+  text-align: left;
+  font-size: 12px;
+  transition:
+    opacity 200ms ease,
+    border-color 200ms ease,
+    background-color 200ms ease,
+    box-shadow 200ms ease;
+}
+.cf-node--planned {
+  border-style: dashed;
+}
+.cf-node--highlighted {
+  border-color: var(--cf-primary);
+}
+.cf-node--active {
+  border-color: var(--cf-primary);
+  background: var(--cf-primary-soft);
+}
+.cf-node--current {
+  box-shadow: 0 0 0 4px var(--cf-primary-soft);
+}
+.cf-node__label {
+  display: block;
+  font-weight: 500;
+  word-break: break-all;
+}
+.cf-node__status {
+  display: block;
+  margin-top: 2px;
+  font-size: 10px;
+  color: var(--cf-muted);
+}
+.cf-dimmed {
+  opacity: 0.3;
+}
+.cf-group {
+  pointer-events: none;
+  padding: 8px 14px 0;
+  border: 1px solid var(--cf-border);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--cf-subtle) 40%, transparent);
+  transition: opacity 200ms ease;
+}
+.cf-group__label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--cf-mono);
+  font-size: 10px;
+  color: var(--cf-muted);
+  user-select: none;
+}
+.cf-layer-label {
+  width: max-content;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--cf-muted);
+}
+.cf-root .react-flow {
+  --xy-background-color: var(--cf-bg);
+  --xy-background-pattern-color: var(--cf-border);
+  --xy-minimap-background-color: var(--cf-card);
+  --xy-node-background-color: transparent;
+  --xy-node-border: none;
+}
+.cf-root .react-flow__node {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.cf-root .react-flow__controls {
+  overflow: hidden;
+  border: 1px solid var(--cf-border);
+  border-radius: var(--cf-radius);
+  box-shadow: none;
+}
+.cf-root .react-flow__controls-button {
+  background: var(--cf-card);
+  border-bottom: 1px solid var(--cf-border);
+  fill: var(--cf-fg);
+}
+.cf-root .react-flow__controls-button:hover {
+  background: var(--cf-subtle);
+}
+.cf-root .react-flow__minimap {
+  overflow: hidden;
+  border: 1px solid var(--cf-border);
+  border-radius: var(--cf-radius);
+}
+.cf-root .react-flow__edge-path {
+  transition:
+    stroke 200ms ease,
+    stroke-opacity 200ms ease,
+    stroke-width 200ms ease;
+}
+.cf-root .react-flow__attribution {
+  background: transparent;
+  color: var(--cf-muted);
+}
+
+/* Flow bar */
+.cf-flowbar {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px 16px;
+  pointer-events: none;
+  z-index: 15;
+}
+.cf-flowbar__card {
+  width: 100%;
+  max-width: 42rem;
+  pointer-events: auto;
+}
+.cf-track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+.cf-track__line,
+.cf-track__fill {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  height: 1px;
+  transform: translateY(-50%);
+}
+.cf-track__line {
+  right: 10px;
+  background: var(--cf-border);
+}
+.cf-track__fill {
+  background: var(--cf-primary);
+  transition: width 300ms ease-out;
+}
+.cf-step-dot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--cf-subtle);
+  color: var(--cf-muted);
+  font-size: 11px;
+  font-weight: 500;
+  transition: background-color 200ms ease;
+}
+.cf-step-dot--done {
+  background: color-mix(in srgb, var(--cf-primary) 30%, transparent);
+  color: var(--cf-fg);
+}
+.cf-step-dot--current {
+  background: var(--cf-primary);
+  color: var(--cf-primary-fg);
+  box-shadow: 0 0 0 4px var(--cf-primary-soft);
+}
+
+/* Motion */
+@keyframes cf-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes cf-slide {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+.cf-fade-in {
+  animation: cf-fade 150ms ease-out;
+}
+.cf-slide-up {
+  animation: cf-slide 200ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-root *,
+  .cf-root *::before,
+  .cf-root *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: reduced motion must override component transitions */
+    animation: none !important;
+    /* biome-ignore lint/complexity/noImportantStyles: same as above */
+    transition: none !important;
+  }
+}
