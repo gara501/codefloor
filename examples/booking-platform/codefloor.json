@@ -1,0 +1,516 @@
+{
+  "$schema": "../../packages/schema/schema.json",
+  "name": "Booking platform (demo)",
+  "description": "An invented, generic booking system used to demonstrate codefloor: web and admin clients, an API gateway, five services, shared data stores and two third-party providers.",
+  "lastReviewed": "2026-09-30",
+  "layers": [
+    {
+      "id": "clients",
+      "label": "Clients"
+    },
+    {
+      "id": "edge",
+      "label": "Edge"
+    },
+    {
+      "id": "services",
+      "label": "Services"
+    },
+    {
+      "id": "data",
+      "label": "Data"
+    },
+    {
+      "id": "external",
+      "label": "External"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "web-app",
+      "label": "Web app",
+      "layer": "clients",
+      "status": "built",
+      "files": ["apps/web/src/**"],
+      "description": "Customer-facing single-page app for searching dates, booking and managing reservations. Talks only to the API gateway over HTTPS."
+    },
+    {
+      "id": "admin-console",
+      "label": "Admin console",
+      "layer": "clients",
+      "status": "built",
+      "files": ["apps/admin/src/**"],
+      "description": "Staff UI for managing properties, prices and manual refunds. Uses the same gateway with an admin role."
+    },
+    {
+      "id": "mobile-app",
+      "label": "Mobile app",
+      "layer": "clients",
+      "status": "planned",
+      "description": "Native iOS/Android client reusing the public gateway API. Planned after the web launch."
+    },
+    {
+      "id": "api-gateway",
+      "label": "API gateway",
+      "layer": "edge",
+      "status": "built",
+      "files": ["services/gateway/src/**"],
+      "description": "Single public entry point. Terminates TLS, verifies session tokens with the auth service, rate-limits, and routes requests to internal services."
+    },
+    {
+      "id": "auth-service",
+      "label": "Auth service",
+      "layer": "services",
+      "status": "built",
+      "files": ["services/auth/src/**"],
+      "description": "Issues and verifies session tokens. Stores users and hashed credentials in Postgres."
+    },
+    {
+      "id": "availability-service",
+      "label": "Availability service",
+      "layer": "services",
+      "status": "built",
+      "files": ["services/availability/src/**"],
+      "description": "Answers \"what is free for these dates\" queries. Reads inventory from Postgres and caches hot searches in Redis for 60 seconds."
+    },
+    {
+      "id": "booking-service",
+      "label": "Booking service",
+      "layer": "services",
+      "status": "built",
+      "files": ["services/booking/src/**"],
+      "description": "Owns the booking lifecycle (pending, confirmed, cancelled). Places a short-lived inventory hold, then confirms when a payment.succeeded event arrives."
+    },
+    {
+      "id": "payments-service",
+      "label": "Payments service",
+      "layer": "services",
+      "status": "built",
+      "files": ["services/payments/src/**"],
+      "description": "Creates payment intents and refunds with the payment provider, verifies its webhooks and publishes payment events. Never stores card data."
+    },
+    {
+      "id": "notifications-service",
+      "label": "Notifications service",
+      "layer": "services",
+      "status": "built",
+      "files": ["services/notifications/src/**"],
+      "description": "Consumes booking events and sends confirmation and cancellation emails through the email provider."
+    },
+    {
+      "id": "waitlist-service",
+      "label": "Waitlist service",
+      "layer": "services",
+      "status": "planned",
+      "description": "Will let customers join a waitlist for sold-out dates and notify them when a cancellation frees a slot."
+    },
+    {
+      "id": "postgres",
+      "label": "Postgres",
+      "layer": "data",
+      "status": "built",
+      "description": "Primary relational store for users, inventory, bookings and payment records. One schema per service."
+    },
+    {
+      "id": "redis-cache",
+      "label": "Redis",
+      "layer": "data",
+      "status": "built",
+      "description": "Search cache and short-lived inventory holds, both TTL based."
+    },
+    {
+      "id": "event-bus",
+      "label": "Event bus",
+      "layer": "data",
+      "status": "built",
+      "description": "Durable topic for domain events (payment.succeeded, booking.confirmed, booking.cancelled) with at-least-once delivery."
+    },
+    {
+      "id": "payment-provider",
+      "label": "Payment provider",
+      "layer": "external",
+      "status": "built",
+      "description": "Third-party card processor. Receives payment intents and refunds, and calls back through a signed webhook."
+    },
+    {
+      "id": "email-provider",
+      "label": "Email provider",
+      "layer": "external",
+      "status": "built",
+      "description": "Transactional email API used for confirmations and receipts."
+    }
+  ],
+  "edges": [
+    {
+      "id": "web-app->api-gateway",
+      "from": "web-app",
+      "to": "api-gateway",
+      "label": "REST/JSON",
+      "kind": "http",
+      "status": "built"
+    },
+    {
+      "id": "admin-console->api-gateway",
+      "from": "admin-console",
+      "to": "api-gateway",
+      "label": "REST/JSON (admin)",
+      "kind": "http",
+      "status": "built"
+    },
+    {
+      "id": "mobile-app->api-gateway",
+      "from": "mobile-app",
+      "to": "api-gateway",
+      "label": "REST/JSON",
+      "kind": "http",
+      "status": "planned"
+    },
+    {
+      "id": "api-gateway->auth-service",
+      "from": "api-gateway",
+      "to": "auth-service",
+      "label": "verify token",
+      "kind": "calls",
+      "status": "built"
+    },
+    {
+      "id": "api-gateway->availability-service",
+      "from": "api-gateway",
+      "to": "availability-service",
+      "label": "search",
+      "kind": "http",
+      "status": "built"
+    },
+    {
+      "id": "api-gateway->booking-service",
+      "from": "api-gateway",
+      "to": "booking-service",
+      "label": "bookings",
+      "kind": "http",
+      "status": "built"
+    },
+    {
+      "id": "api-gateway->payments-service",
+      "from": "api-gateway",
+      "to": "payments-service",
+      "label": "forward webhook",
+      "kind": "http",
+      "status": "built"
+    },
+    {
+      "id": "payment-provider->api-gateway",
+      "from": "payment-provider",
+      "to": "api-gateway",
+      "label": "signed webhook",
+      "kind": "http",
+      "status": "built"
+    },
+    {
+      "id": "auth-service->postgres",
+      "from": "auth-service",
+      "to": "postgres",
+      "label": "users",
+      "kind": "writes",
+      "status": "built"
+    },
+    {
+      "id": "availability-service->redis-cache",
+      "from": "availability-service",
+      "to": "redis-cache",
+      "label": "cached searches",
+      "kind": "reads",
+      "status": "built"
+    },
+    {
+      "id": "availability-service->postgres",
+      "from": "availability-service",
+      "to": "postgres",
+      "label": "inventory",
+      "kind": "reads",
+      "status": "built"
+    },
+    {
+      "id": "booking-service->redis-cache",
+      "from": "booking-service",
+      "to": "redis-cache",
+      "label": "inventory hold",
+      "kind": "writes",
+      "status": "built"
+    },
+    {
+      "id": "booking-service->postgres",
+      "from": "booking-service",
+      "to": "postgres",
+      "label": "bookings",
+      "kind": "writes",
+      "status": "built"
+    },
+    {
+      "id": "booking-service->payments-service",
+      "from": "booking-service",
+      "to": "payments-service",
+      "label": "create payment intent / refund",
+      "kind": "calls",
+      "status": "built"
+    },
+    {
+      "id": "payments-service->payment-provider",
+      "from": "payments-service",
+      "to": "payment-provider",
+      "label": "payment intents, refunds",
+      "kind": "http",
+      "status": "built"
+    },
+    {
+      "id": "payments-service->postgres",
+      "from": "payments-service",
+      "to": "postgres",
+      "label": "payment records",
+      "kind": "writes",
+      "status": "built"
+    },
+    {
+      "id": "payments-service->event-bus",
+      "from": "payments-service",
+      "to": "event-bus",
+      "label": "payment.succeeded, payment.refunded",
+      "kind": "event",
+      "status": "built"
+    },
+    {
+      "id": "event-bus->booking-service",
+      "from": "event-bus",
+      "to": "booking-service",
+      "label": "payment events",
+      "kind": "event",
+      "status": "built"
+    },
+    {
+      "id": "booking-service->event-bus",
+      "from": "booking-service",
+      "to": "event-bus",
+      "label": "booking.confirmed, booking.cancelled",
+      "kind": "event",
+      "status": "built"
+    },
+    {
+      "id": "event-bus->notifications-service",
+      "from": "event-bus",
+      "to": "notifications-service",
+      "label": "booking events",
+      "kind": "event",
+      "status": "built"
+    },
+    {
+      "id": "notifications-service->email-provider",
+      "from": "notifications-service",
+      "to": "email-provider",
+      "label": "send email",
+      "kind": "http",
+      "status": "built"
+    },
+    {
+      "id": "booking-service->waitlist-service",
+      "from": "booking-service",
+      "to": "waitlist-service",
+      "label": "slot freed",
+      "kind": "event",
+      "status": "planned"
+    }
+  ],
+  "flows": [
+    {
+      "id": "search-availability",
+      "name": "Search availability",
+      "description": "A customer looks for free dates; hot searches are served from cache.",
+      "steps": [
+        {
+          "node": "web-app",
+          "label": "Pick dates",
+          "detail": "The customer enters a date range and guest count."
+        },
+        {
+          "node": "api-gateway",
+          "label": "Route search",
+          "detail": "The gateway rate-limits and forwards the query."
+        },
+        {
+          "node": "availability-service",
+          "label": "Check cache",
+          "detail": "The service looks up the search key in Redis."
+        },
+        {
+          "node": "redis-cache",
+          "label": "Cache miss",
+          "detail": "No cached result, so the service falls back to the database."
+        },
+        {
+          "node": "postgres",
+          "label": "Read inventory",
+          "detail": "Free units for the range are computed from inventory rows."
+        },
+        {
+          "node": "availability-service",
+          "label": "Cache and return",
+          "detail": "The result is cached for 60 seconds and returned."
+        },
+        {
+          "node": "web-app",
+          "label": "Render results",
+          "detail": "Available options are listed with prices."
+        }
+      ]
+    },
+    {
+      "id": "create-booking",
+      "name": "Create booking",
+      "description": "From clicking Book to a pending booking with a payment intent.",
+      "steps": [
+        {
+          "node": "web-app",
+          "label": "Submit booking",
+          "detail": "The customer confirms dates and guest details."
+        },
+        {
+          "node": "api-gateway",
+          "label": "Verify session",
+          "detail": "The gateway asks the auth service to validate the token."
+        },
+        {
+          "node": "auth-service",
+          "label": "Validate token",
+          "detail": "The token signature and expiry are checked."
+        },
+        {
+          "node": "booking-service",
+          "label": "Create pending booking",
+          "detail": "A booking is created in the pending state."
+        },
+        {
+          "node": "redis-cache",
+          "label": "Hold inventory",
+          "detail": "The units are held for 10 minutes so nobody else can take them."
+        },
+        {
+          "node": "postgres",
+          "label": "Save booking",
+          "detail": "The pending booking row is written."
+        },
+        {
+          "node": "payments-service",
+          "label": "Create payment intent",
+          "detail": "The booking service asks payments for an intent."
+        },
+        {
+          "node": "payment-provider",
+          "label": "Collect card",
+          "detail": "The customer completes payment on the provider's hosted form."
+        }
+      ]
+    },
+    {
+      "id": "payment-confirmation",
+      "name": "Payment confirmation",
+      "description": "The provider's webhook turns a pending booking into a confirmed one and emails the customer.",
+      "steps": [
+        {
+          "node": "payment-provider",
+          "label": "Send webhook",
+          "detail": "The provider calls back with a signed payment result."
+        },
+        {
+          "node": "api-gateway",
+          "label": "Route webhook",
+          "detail": "The public webhook path is forwarded to payments."
+        },
+        {
+          "node": "payments-service",
+          "label": "Verify signature",
+          "detail": "The signature is checked before anything is trusted."
+        },
+        {
+          "node": "postgres",
+          "label": "Record payment",
+          "detail": "The payment record is stored for reconciliation."
+        },
+        {
+          "node": "event-bus",
+          "label": "Publish payment.succeeded",
+          "detail": "Payments emits the event; it does not call booking directly."
+        },
+        {
+          "node": "booking-service",
+          "label": "Confirm booking",
+          "detail": "The booking moves to confirmed and the hold is released."
+        },
+        {
+          "node": "event-bus",
+          "label": "Publish booking.confirmed",
+          "detail": "Downstream consumers learn about the confirmation."
+        },
+        {
+          "node": "notifications-service",
+          "label": "Build email",
+          "detail": "The confirmation email is rendered from a template."
+        },
+        {
+          "node": "email-provider",
+          "label": "Send email",
+          "detail": "The email is delivered to the customer."
+        }
+      ]
+    },
+    {
+      "id": "cancel-with-refund",
+      "name": "Cancel with refund",
+      "description": "A customer cancels; inventory is released and the card is refunded.",
+      "steps": [
+        {
+          "node": "web-app",
+          "label": "Cancel booking",
+          "detail": "The customer cancels from their reservations page."
+        },
+        {
+          "node": "api-gateway",
+          "label": "Route request",
+          "detail": "The authenticated request goes to the booking service."
+        },
+        {
+          "node": "booking-service",
+          "label": "Mark cancelled",
+          "detail": "The booking is cancelled and its units freed."
+        },
+        {
+          "node": "postgres",
+          "label": "Release inventory",
+          "detail": "Inventory rows are updated in the same transaction."
+        },
+        {
+          "node": "payments-service",
+          "label": "Request refund",
+          "detail": "Booking asks payments to refund the captured amount."
+        },
+        {
+          "node": "payment-provider",
+          "label": "Refund card",
+          "detail": "The provider refunds the original payment method."
+        },
+        {
+          "node": "event-bus",
+          "label": "Publish booking.cancelled",
+          "detail": "Consumers are told the booking is gone."
+        },
+        {
+          "node": "notifications-service",
+          "label": "Send cancellation",
+          "detail": "A cancellation email with the refund amount is prepared."
+        },
+        {
+          "node": "email-provider",
+          "label": "Deliver email",
+          "detail": "The customer receives the cancellation notice."
+        }
+      ]
+    }
+  ]
+}
