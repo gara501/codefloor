@@ -2,6 +2,8 @@ import type { CodefloorDoc } from "@codefloor/schema";
 import { useEffect, useState } from "react";
 import { readSelection, readView, type Selection, toParams, type ViewMode } from "./selection";
 
+const OWN_KEYS = ["view", "node", "flow", "step"];
+
 interface State {
   view: ViewMode;
   selection: Selection;
@@ -29,7 +31,11 @@ export function useSelectionState(doc: CodefloorDoc, urlState: boolean) {
   function write(view: ViewMode, selection: Selection, replace = false) {
     setState({ view, selection });
     if (!urlState) return;
-    const qs = toParams(view, selection).toString();
+    // Keep the host page's own params; only ours are replaced.
+    const params = new URLSearchParams(window.location.search);
+    for (const key of OWN_KEYS) params.delete(key);
+    for (const [key, value] of toParams(view, selection)) params.set(key, value);
+    const qs = params.toString();
     const url = `${window.location.pathname}${qs ? `?${qs}` : ""}${window.location.hash}`;
     if (replace) window.history.replaceState(null, "", url);
     else window.history.pushState(null, "", url);

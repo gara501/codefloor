@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import picomatch from "picomatch";
 
-/** sha256 over the sorted files matching `patterns`. */
+/** sha256 over the sorted files matching `patterns`; line endings are normalized so CRLF checkouts match. */
 export function hashPatterns(repoDir: string, patterns: string[], files: string[]): string {
   const match = picomatch(patterns);
   const hash = createHash("sha256");
@@ -11,7 +11,7 @@ export function hashPatterns(repoDir: string, patterns: string[], files: string[
     hash
       .update(file)
       .update("\0")
-      .update(readFileSync(join(repoDir, file)))
+      .update(readFileSync(join(repoDir, file), "utf8").replace(/\r\n/g, "\n"))
       .update("\0");
   }
   return `sha256:${hash.digest("hex")}`;

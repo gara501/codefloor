@@ -70,6 +70,7 @@ function Explorer({
   const { view, selection, write } = useSelectionState(doc, urlState);
   const flowsRef = useRef<HTMLDetailsElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   const activeFlow =
     selection?.kind === "flow" ? (doc.flows.find((f) => f.id === selection.flowId) ?? null) : null;
@@ -241,7 +242,11 @@ function Explorer({
 
   // ←/→ step a flow, Esc clears, "/" focuses search.
   const onKeyDown = useEffectEvent((event: KeyboardEvent) => {
-    if (isTypingTarget(event.target) || event.metaKey || event.ctrlKey) return;
+    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return;
+    if (isTypingTarget(event.target)) return;
+    // Only when focus is inside the explorer, or nowhere in particular (standalone page).
+    const active = document.activeElement;
+    if (active && active !== document.body && !rootRef.current?.contains(active)) return;
     if (event.key === "/") {
       event.preventDefault();
       searchRef.current?.focus();
@@ -263,7 +268,8 @@ function Explorer({
   };
 
   return (
-    <div className="cf-shell">
+    // tabIndex keeps focus inside the explorer when clicking non-focusable areas.
+    <div ref={rootRef} className="cf-shell" tabIndex={-1}>
       <header className="cf-header">
         <div className="cf-min0">
           <h1 className="cf-title">{title ?? doc.name}</h1>

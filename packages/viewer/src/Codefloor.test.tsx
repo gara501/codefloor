@@ -74,3 +74,27 @@ describe("Codefloor", () => {
     expect(container.querySelector(".react-flow")).not.toBeNull();
   });
 });
+
+describe("Codefloor embedding", () => {
+  it("keeps the host page's own query params", async () => {
+    window.history.replaceState(null, "", "/?tab=arch");
+    render(<Codefloor data={demo} urlState />);
+    await userEvent.click(screen.getByRole("button", { name: /^Redis/ }));
+    expect(window.location.search).toBe("?tab=arch&node=redis-cache");
+  });
+
+  it("ignores shortcuts while focus is outside the explorer", async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <button type="button">host</button>
+        <Codefloor data={demo} />
+      </>,
+    );
+    const row = screen.getByRole("button", { name: /^Postgres/ });
+    await user.click(row);
+    screen.getByRole("button", { name: "host" }).focus();
+    await user.keyboard("{Escape}");
+    expect(row).toHaveAttribute("aria-expanded", "true");
+  });
+});
