@@ -7,5 +7,10 @@ export default defineConfig({
       "@codefloor/schema": fileURLToPath(new URL("../schema/src/index.ts", import.meta.url)),
     },
   },
-  test: { name: "viewer", environment: "jsdom", setupFiles: ["./src/test-setup.ts"] },
+  test: {
+    name: "viewer",
+    environment: "jsdom",
+    setupFiles: ["./src/test-setup.ts"],
+    include: ["src/**/*.test.{ts,tsx}", "app/**/*.test.ts"],
+  },
 });
