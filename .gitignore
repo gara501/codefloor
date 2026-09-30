@@ -7,3 +7,4 @@ coverage/
 .superpowers/
 codefloor-site/
 docs/superpowers/
+.internal-denylist
