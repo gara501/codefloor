@@ -4,6 +4,8 @@
 
 codefloor turns a `codefloor.json` document — layers, modules, edges and step-by-step flows — into an explorer you can click through: a searchable module list, a layered diagram, and guided walkthroughs of how a request moves through the system.
 
+![Walking the "Payment confirmation" flow step by step in the diagram view](docs/images/flow-walkthrough.png)
+
 It ships as three packages and a Claude skill:
 
 | Package | What it does |
@@ -26,6 +28,14 @@ node packages/cli/dist/bin.js serve examples/booking-platform/codefloor.json
 ```
 
 Open the printed URL. Press `/` to search, pick a flow from **Flows**, and step through it with `←` `→`.
+
+## Screenshots
+
+| Module details (dark theme) | List view |
+|---|---|
+| ![Selecting a module highlights its connections and lists the flows that pass through it](docs/images/module-detail.png) | ![Modules grouped by layer, with an expanded module showing its connections](docs/images/list-view.png) |
+
+Screenshots show the bundled [booking-platform demo](examples/booking-platform/codefloor.json).
 
 ## Map your own project
 

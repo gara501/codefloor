@@ -6,7 +6,7 @@ import { cn } from "./cn";
 import { Diagram, type DiagramNode } from "./Diagram";
 import { FlowBar } from "./FlowBar";
 import type { FlowHopEdgeType, FlowHopState } from "./FlowHopEdge";
-import { layoutArchitecture, pickEdgeHandles } from "./layout";
+import { layoutArchitecture, NODE_HEIGHT, NODE_WIDTH, pickEdgeHandles } from "./layout";
 import { ModuleList } from "./ModuleList";
 import { ModuleSearch } from "./ModuleSearch";
 import { NodeDetailCard } from "./NodeDetailCard";
@@ -119,6 +119,9 @@ function Explorer({
         id: node.id,
         type: "module",
         position: layout.nodePositions[node.id] ?? { x: 0, y: 0 },
+        // Fallback size so the MiniMap can draw controlled nodes before they are measured.
+        initialWidth: NODE_WIDTH,
+        initialHeight: NODE_HEIGHT,
         draggable: false,
         connectable: false,
         data: {

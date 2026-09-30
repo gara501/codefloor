@@ -68,6 +68,12 @@ describe("Codefloor", () => {
     expect(window.location.search).toBe("?node=redis-cache");
   });
 
+  it("draws modules in the minimap", async () => {
+    const { container } = render(<Codefloor data={demo} />);
+    await userEvent.click(screen.getByRole("button", { name: "Diagram" }));
+    expect(container.querySelectorAll(".react-flow__minimap-node").length).toBe(demo.nodes.length);
+  });
+
   it("switches to the diagram view", async () => {
     const { container } = render(<Codefloor data={demo} />);
     await userEvent.click(screen.getByRole("button", { name: "Diagram" }));
