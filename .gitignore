@@ -6,3 +6,4 @@ coverage/
 *.tsbuildinfo
 .superpowers/
 codefloor-site/
+docs/superpowers/

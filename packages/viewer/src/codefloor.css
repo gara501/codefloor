@@ -491,6 +491,10 @@
   --xy-background-color: var(--cf-bg);
   --xy-background-pattern-color: var(--cf-border);
   --xy-minimap-background-color: var(--cf-card);
+  --xy-minimap-mask-background-color: color-mix(in srgb, var(--cf-bg) 65%, transparent);
+  --xy-minimap-node-background-color: var(--cf-border-strong);
+  --xy-controls-button-background-color: var(--cf-card);
+  --xy-controls-button-color: var(--cf-fg);
   --xy-node-background-color: transparent;
   --xy-node-border: none;
 }

@@ -1,5 +1,6 @@
 import type { Node, NodeProps } from "@xyflow/react";
 import { cn } from "../cn";
+import { OTHER_GROUP } from "../layout";
 
 export interface GroupNodeData {
   [key: string]: unknown;
@@ -18,10 +19,12 @@ export function GroupNode({ data }: NodeProps<GroupNodeType>) {
       style={{ width: data.width, height: data.height }}
       className={cn("cf-group", data.isDimmed && "cf-dimmed")}
     >
-      <p className="cf-group__label">
-        {data.label}
-        <span className="cf-badge">{data.count}</span>
-      </p>
+      {data.label !== OTHER_GROUP && (
+        <p className="cf-group__label">
+          {data.label}
+          <span className="cf-badge">{data.count}</span>
+        </p>
+      )}
     </div>
   );
 }
