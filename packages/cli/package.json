@@ -16,7 +16,8 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json && node scripts/copy-app.mjs",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepack": "node scripts/check-packed.mjs"
   },
   "dependencies": {
     "@codefloor/schema": "0.1.0",

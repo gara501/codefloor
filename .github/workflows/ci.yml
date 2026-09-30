@@ -16,6 +16,8 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: npm run typecheck
+      - run: node packages/cli/dist/bin.js build examples/booking-platform/codefloor.json --out /tmp/site
+      - run: npm pack -w codefloor --dry-run
       - run: npm test
         env:
           CODEFLOOR_DENYLIST: ${{ secrets.CODEFLOOR_DENYLIST }}
