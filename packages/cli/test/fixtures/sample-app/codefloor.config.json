@@ -1,0 +1,12 @@
+{
+  "root": "src",
+  "tsconfig": "tsconfig.json",
+  "layers": [
+    { "id": "app", "label": "App" },
+    { "id": "infra", "label": "Infra" }
+  ],
+  "modules": [
+    { "id": "cart", "label": "Cart", "layer": "app", "include": ["src/features/cart/**"] },
+    { "id": "lib", "label": "Lib", "layer": "infra", "include": ["src/lib/**"] }
+  ]
+}

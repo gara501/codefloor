@@ -1,0 +1,29 @@
+{
+  "name": "codefloor",
+  "version": "0.1.0",
+  "description": "Generate, validate and serve interactive architecture maps from a codefloor.json document.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "codefloor": "./dist/bin.js"
+  },
+  "files": [
+    "dist",
+    "app"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && node scripts/copy-app.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@codefloor/schema": "0.1.0",
+    "picomatch": "^4.0.7",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/picomatch": "^4.0.3"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "types": ["node"],
+    "noEmit": true,
+    "paths": { "@codefloor/schema": ["../schema/src/index.ts"] }
+  },
+  "include": ["src"]
+}
